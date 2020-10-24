@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table
-public class FileData {
+public class FileModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +26,12 @@ public class FileData {
     private String fileType;
 
     @Column(name = "file_size")
-    private int fileSize;
+    private long fileSize;
 
     @Column(name = "file_data")
     byte[] fileData;
 
-    public FileData() {
+    public FileModel() {
     }
 
     public int getFileId() {
@@ -78,7 +78,7 @@ public class FileData {
         return fileSize;
     }
 
-    public void setFileSize(int fileSize) {
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 

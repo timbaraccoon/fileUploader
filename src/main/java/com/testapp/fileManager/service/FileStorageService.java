@@ -1,7 +1,7 @@
 package com.testapp.fileManager.service;
 
 import com.testapp.fileManager.dao.FileStorageRepository;
-import com.testapp.fileManager.entity.FileData;
+import com.testapp.fileManager.entity.FileModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -25,7 +25,7 @@ public class FileStorageService {
         FileStorageRepository fileStorageRepository;
 
         @Autowired
-        public FileStorageService(FileData fileStorage) {
+        public FileStorageService(FileModel fileStorage) {
             this.fileStorageLocation = Paths.get(fileStorage.getUploadDir())
                     .toAbsolutePath().normalize();
 
@@ -56,7 +56,7 @@ public class FileStorageService {
                 Path targetLocation = this.fileStorageLocation.resolve(fileName);
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-                FileData doc = fileStorageRepository.checkDocumentByUserId(userId, docType);
+                FileModel doc; // = fileStorageRepository.checkDocumentByUserId(userId, docType);
                 
                 if(doc != null) {
                     doc.setFileType(file.getContentType());
@@ -64,7 +64,7 @@ public class FileStorageService {
                     fileStorageRepository.save(doc);
 
                 } else {
-                    FileData newDoc = new FileData();
+                    FileModel newDoc = new FileModel();
                     newDoc.setFileId(userId);
                     newDoc.setFileType(file.getContentType());
                     newDoc.setFileName(fileName);

@@ -13,7 +13,7 @@ public interface FileManagerService {
 
     FileModel getFileById(int id);
 
-    String DeleteFile(int fileId);
+    void DeleteFile(int fileId);
 
     List<String> getFileNamesList();
 

@@ -71,8 +71,9 @@ public class FileManagerServiceImpl implements FileManagerService {
     }
 
     @Override
-    public String DeleteFile(int fileId) {
-        return null;
+    public void DeleteFile(int fileId) {
+        fileStorageRepository.deleteById(fileId);
+        // return "File with id: " + fileId + " - successfully deleted.";
     }
 
     @Override

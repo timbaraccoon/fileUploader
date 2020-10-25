@@ -45,30 +45,36 @@ public class FileManagerServiceImpl implements FileManagerService {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new FileStorageException("Can't store this file, something goes wrong", ex);
+            throw new RuntimeException("Can't store this file, something goes wrong", e);
         }
-
         // return "File: " + inputFile.getName() + " successfully saved. Go celebrate Man!";
-        return createNewInfoResponseFromModel(model);
+        return createNewFileInfoResponse(model);
     }
 
     @Override
-    public FileInfoResponse UpdateFile(int fileId, MultipartFile file) {
+    public FileInfoResponse updateFile(int fileId, MultipartFile inputFile) {
         FileModel model = getFileModelById(fileId);
 
-        // update logic
+        try {
+            model.setFileData(inputFile.getBytes());
+            model.setFileSize(inputFile.getSize());
+            model.setUpdateDate(LocalDateTime.now());
 
-        return createNewInfoResponseFromModel(model);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        fileStorageRepository.save(model);
+
+        return createNewFileInfoResponse(model);
     }
 
     @Override
-    public MultipartFile getFileById(int fileId) {
+    public FileModel getFileById(int fileId) {
         FileModel model = getFileModelById(fileId);
-
-        return file;
+        return model;
     }
 
-    private FileInfoResponse createNewInfoResponseFromModel(FileModel model) {
+    private FileInfoResponse createNewFileInfoResponse(FileModel model) {
         return new FileInfoResponse(
                 model.getFileId(),
                 model.getFileName(),
@@ -78,8 +84,6 @@ public class FileManagerServiceImpl implements FileManagerService {
                 model.getUpdateDate()
         );
     }
-
-
 
     private FileModel getFileModelById(int id) {
         Optional<FileModel> result = fileStorageRepository.findById(id);
@@ -95,13 +99,13 @@ public class FileManagerServiceImpl implements FileManagerService {
     }
 
     @Override
-    public void DeleteFile(int fileId) {
+    public void deleteFile(int fileId) {
         fileStorageRepository.deleteById(fileId);
         // return "File with id: " + fileId + " - successfully deleted.";
     }
-
+/*
     @Override
     public List<String> getFileNamesList() {
-        return null;
-    }
+        return fileStorageRepository.findFileNames();
+    } */
 }

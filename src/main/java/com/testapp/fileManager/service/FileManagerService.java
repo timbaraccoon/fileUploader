@@ -10,12 +10,12 @@ public interface FileManagerService {
 
     FileInfoResponse saveFile(MultipartFile file);
 
-    FileInfoResponse UpdateFile(int fileId, MultipartFile file);
+    FileInfoResponse updateFile(int fileId, MultipartFile file);
 
-    MultipartFile getFileById(int id);
+    FileModel getFileById(int id);
 
-    void DeleteFile(int fileId);
+    void deleteFile(int fileId);
 
-    List<String> getFileNamesList();
+//    List<String> getFileNamesList();
 
 }

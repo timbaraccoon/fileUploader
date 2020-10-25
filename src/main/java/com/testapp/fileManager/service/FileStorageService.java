@@ -16,9 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-@Service
 public class FileStorageService {
-
+/*
         private final Path fileStorageLocation;
 
         @Autowired
@@ -96,5 +95,5 @@ public class FileStorageService {
             return fileStorageRepository.getUploadDocumnetPath(userId, docType);
 
         }
-
+*/
 }

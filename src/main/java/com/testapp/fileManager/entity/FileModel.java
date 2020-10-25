@@ -13,12 +13,6 @@ public class FileModel {
     @Column(name = "file_id")
     private int fileId;
 
-    @Column(name = "upload_date")
-    private LocalDateTime uploadDate;
-
-    @Column(name = "last_update_date")
-    private LocalDateTime updateDate;
-
     @Column(name = "file_name")
     private String fileName;
 
@@ -27,6 +21,12 @@ public class FileModel {
 
     @Column(name = "file_size")
     private long fileSize;
+
+    @Column(name = "upload_date")
+    private LocalDateTime uploadDate;
+
+    @Column(name = "last_update_date")
+    private LocalDateTime updateDate;
 
     @Column(name = "file_data")
     byte[] fileData;

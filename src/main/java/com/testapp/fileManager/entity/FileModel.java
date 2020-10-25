@@ -74,7 +74,7 @@ public class FileModel {
         this.fileType = fileType;
     }
 
-    public double getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 

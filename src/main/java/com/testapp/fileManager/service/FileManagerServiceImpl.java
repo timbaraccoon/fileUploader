@@ -2,6 +2,7 @@ package com.testapp.fileManager.service;
 
 import com.testapp.fileManager.dao.FileStorageRepository;
 import com.testapp.fileManager.entity.FileModel;
+import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,19 +23,18 @@ public class FileManagerServiceImpl implements FileManagerService {
     }
 
     @Override
-    public String saveFile(MultipartFile inputFile) {
-        byte[] fileData;
+    public FileInfoResponse saveFile(MultipartFile inputFile) {
         FileModel model;
 
         try {
-            fileData = inputFile.getInputStream().readAllBytes();
+            // fileData = inputFile.getInputStream().readAllBytes();
 
             model = new FileModel();
 
             model.setFileName(inputFile.getOriginalFilename());
             model.setFileSize(inputFile.getSize());
             model.setFileType(inputFile.getContentType());
-            model.setFileData(fileData);
+            model.setFileData(inputFile.getBytes());
 
             LocalDateTime currTime = LocalDateTime.now();
 
@@ -48,16 +48,40 @@ public class FileManagerServiceImpl implements FileManagerService {
             throw new FileStorageException("Can't store this file, something goes wrong", ex);
         }
 
-        return "File: " + inputFile.getName() + " successfully saved. Go celebrate Man!";
+        // return "File: " + inputFile.getName() + " successfully saved. Go celebrate Man!";
+        return createNewInfoResponseFromModel(model);
     }
 
     @Override
-    public String UpdateFile(int fileId, MultipartFile file) {
-        return null;
+    public FileInfoResponse UpdateFile(int fileId, MultipartFile file) {
+        FileModel model = getFileModelById(fileId);
+
+        // update logic
+
+        return createNewInfoResponseFromModel(model);
     }
 
     @Override
-    public FileModel getFileById(int id) {
+    public MultipartFile getFileById(int fileId) {
+        FileModel model = getFileModelById(fileId);
+
+        return file;
+    }
+
+    private FileInfoResponse createNewInfoResponseFromModel(FileModel model) {
+        return new FileInfoResponse(
+                model.getFileId(),
+                model.getFileName(),
+                model.getFileName(),
+                model.getFileSize(),
+                model.getUploadDate(),
+                model.getUpdateDate()
+        );
+    }
+
+
+
+    private FileModel getFileModelById(int id) {
         Optional<FileModel> result = fileStorageRepository.findById(id);
         FileModel fileModel;
 

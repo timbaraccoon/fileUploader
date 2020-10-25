@@ -1,17 +1,18 @@
 package com.testapp.fileManager.service;
 
 import com.testapp.fileManager.entity.FileModel;
+import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface FileManagerService {
 
-    String saveFile(MultipartFile file);
+    FileInfoResponse saveFile(MultipartFile file);
 
-    String UpdateFile(int fileId, MultipartFile file);
+    FileInfoResponse UpdateFile(int fileId, MultipartFile file);
 
-    FileModel getFileById(int id);
+    MultipartFile getFileById(int id);
 
     void DeleteFile(int fileId);
 

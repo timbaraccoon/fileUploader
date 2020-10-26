@@ -7,10 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.util.List;
 
 @RestController
@@ -40,8 +44,12 @@ public class FileManagerRestController {
             // поменять на   CustomNotFoundException(""File id is not found: " + fileId)
         }
 
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        String mimeType = fileNameMap.getContentTypeFor(model.getFileName());
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + model.getFileName() + "\"")
+                .contentType(MediaType.asMediaType(MimeType.valueOf(mimeType)))
                 .body(new ByteArrayResource(model.getFileData()));
     }
 

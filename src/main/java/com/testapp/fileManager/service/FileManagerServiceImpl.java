@@ -3,6 +3,7 @@ package com.testapp.fileManager.service;
 import com.testapp.fileManager.dao.FileStorageRepository;
 import com.testapp.fileManager.entity.FileModel;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,9 +32,9 @@ public class FileManagerServiceImpl implements FileManagerService {
 
             model = new FileModel();
 
-            model.setFileName(inputFile.getOriginalFilename());
+            model.setFileName(FilenameUtils.getName(inputFile.getOriginalFilename()));
             model.setFileSize(inputFile.getSize());
-            model.setFileType(inputFile.getContentType());
+            model.setFileType(FilenameUtils.getExtension(inputFile.getOriginalFilename()));
             model.setFileData(inputFile.getBytes());
 
             LocalDateTime currTime = LocalDateTime.now();
@@ -78,7 +79,7 @@ public class FileManagerServiceImpl implements FileManagerService {
         return new FileInfoResponse(
                 model.getFileId(),
                 model.getFileName(),
-                model.getFileName(),
+                model.getFileType(),
                 model.getFileSize(),
                 model.getUploadDate(),
                 model.getUpdateDate()

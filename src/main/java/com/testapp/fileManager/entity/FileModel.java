@@ -13,22 +13,22 @@ public class FileModel {
     @Column(name = "file_id")
     private int fileId;
 
-    @Column(name = "file_name")
+    @Column(name = "file_name", length = 100, nullable = false)
     private String fileName;
 
-    @Column(name = "file_type")
+    @Column(name = "file_type", length = 50, nullable = false)
     private String fileType;
 
-    @Column(name = "file_size")
+    @Column(name = "file_size", nullable = false)
     private long fileSize;
 
-    @Column(name = "upload_date")
+    @Column(name = "upload_date", nullable = false)
     private LocalDateTime uploadDate;
 
-    @Column(name = "last_update_date")
+    @Column(name = "last_update_date", nullable = false)
     private LocalDateTime updateDate;
 
-    @Column(name = "file_data")
+    @Column(name = "file_data", length = 16000000, nullable = false)
     byte[] fileData;
 
     public FileModel() {

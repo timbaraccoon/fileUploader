@@ -1,5 +1,6 @@
 package com.testapp.fileManager.rest;
 
+import com.testapp.fileManager.dao.OnlyFileNames;
 import com.testapp.fileManager.entity.FileModel;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import com.testapp.fileManager.service.FileManagerService;
@@ -53,11 +54,11 @@ public class FileManagerRestController {
                 .body(new ByteArrayResource(model.getFileData()));
     }
 
-/*
-    @GetMapping("/files/list_names")
-    public List<String> getCustomers() {
+
+    @GetMapping("/files/list-of-names")
+    public List<OnlyFileNames> getCustomers() {
         return fileManagerService.getFileNamesList();
-    }*/
+    }
 
 
     @PutMapping("/files/{fileId}")

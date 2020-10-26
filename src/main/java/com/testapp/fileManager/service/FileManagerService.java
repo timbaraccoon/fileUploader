@@ -1,5 +1,6 @@
 package com.testapp.fileManager.service;
 
+import com.testapp.fileManager.dao.OnlyFileNames;
 import com.testapp.fileManager.entity.FileModel;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,6 @@ public interface FileManagerService {
 
     void deleteFile(int fileId);
 
-//    List<String> getFileNamesList();
+    List<OnlyFileNames> getFileNamesList();
 
 }

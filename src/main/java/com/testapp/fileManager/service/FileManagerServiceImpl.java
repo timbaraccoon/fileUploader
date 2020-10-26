@@ -1,6 +1,7 @@
 package com.testapp.fileManager.service;
 
 import com.testapp.fileManager.dao.FileStorageRepository;
+import com.testapp.fileManager.dao.OnlyFileNames;
 import com.testapp.fileManager.entity.FileModel;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.apache.commons.io.FilenameUtils;
@@ -104,9 +105,9 @@ public class FileManagerServiceImpl implements FileManagerService {
         fileStorageRepository.deleteById(fileId);
         // return "File with id: " + fileId + " - successfully deleted.";
     }
-/*
+
     @Override
-    public List<String> getFileNamesList() {
-        return fileStorageRepository.findFileNames();
-    } */
+    public List<OnlyFileNames> getFileNamesList() {
+        return fileStorageRepository.findNamesByFileNameNotNull();
+    }
 }

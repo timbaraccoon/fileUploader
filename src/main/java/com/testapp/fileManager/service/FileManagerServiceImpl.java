@@ -77,6 +77,26 @@ public class FileManagerServiceImpl implements FileManagerService {
         return model;
     }
 
+    @Override
+    public List<FileInfoResponse> getFileList() {
+
+        List<FileModel> storageModels = fileStorageRepository.findAll();
+        List<FileInfoResponse> responseList = new ArrayList<>();
+
+        for (FileModel model : storageModels) {
+            responseList.add(createNewFileInfoResponse(model));
+        }
+
+        return responseList;
+    }
+
+    @Override
+    public List<OnlyFileNames> getFileNamesList() {
+        return fileStorageRepository.findNamesByFileNameNotNull();
+    }
+
+
+
     private FileInfoResponse createNewFileInfoResponse(FileModel model) {
         return new FileInfoResponse(
                 model.getFileId(),
@@ -107,21 +127,5 @@ public class FileManagerServiceImpl implements FileManagerService {
         // return "File with id: " + fileId + " - successfully deleted.";
     }
 
-    @Override
-    public List<OnlyFileNames> getFileNamesList() {
-        return fileStorageRepository.findNamesByFileNameNotNull();
-    }
 
-    @Override
-    public List<FileInfoResponse> getFileList() {
-
-        List<FileModel> storageModels = fileStorageRepository.findAll();
-        List<FileInfoResponse> responseList = new ArrayList<>();
-
-        for (FileModel model : storageModels) {
-            responseList.add(createNewFileInfoResponse(model));
-        }
-
-        return responseList;
-    }
 }

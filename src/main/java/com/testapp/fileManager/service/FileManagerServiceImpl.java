@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,5 +110,18 @@ public class FileManagerServiceImpl implements FileManagerService {
     @Override
     public List<OnlyFileNames> getFileNamesList() {
         return fileStorageRepository.findNamesByFileNameNotNull();
+    }
+
+    @Override
+    public List<FileInfoResponse> getFileList() {
+
+        List<FileModel> storageModels = fileStorageRepository.findAll();
+        List<FileInfoResponse> responseList = new ArrayList<>();
+
+        for (FileModel model : storageModels) {
+            responseList.add(createNewFileInfoResponse(model));
+        }
+
+        return responseList;
     }
 }

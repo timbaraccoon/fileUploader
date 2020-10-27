@@ -55,8 +55,14 @@ public class FileManagerRestController {
     }
 
 
+    @GetMapping("/files/list")
+    public List<FileInfoResponse> getFileList() {
+        return fileManagerService.getFileList();
+    }
+
+
     @GetMapping("/files/list-of-names")
-    public List<OnlyFileNames> getCustomers() {
+    public List<OnlyFileNames> getFileNamesList() {
         return fileManagerService.getFileNamesList();
     }
 

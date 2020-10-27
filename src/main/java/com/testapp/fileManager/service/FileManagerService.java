@@ -19,4 +19,6 @@ public interface FileManagerService {
 
     List<OnlyFileNames> getFileNamesList();
 
+    List<FileInfoResponse> getFileList();
+
 }

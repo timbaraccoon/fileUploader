@@ -10,6 +10,7 @@ public class FileInfoResponse {
     private final long fileSize;
     private final LocalDateTime uploadDate;
     private final LocalDateTime updateDate;
+    private final String downloadLink;
 
 
     public FileInfoResponse(int fileId, String fileName, String fileType, long fileSize,
@@ -20,6 +21,7 @@ public class FileInfoResponse {
         this.fileSize = fileSize;
         this.uploadDate = uploadDate;
         this.updateDate = updateDate;
+        this.downloadLink = "http://localhost:8080/api/files/" + fileId; // link for creation get request for download
 
     }
 
@@ -47,6 +49,10 @@ public class FileInfoResponse {
         return updateDate;
     }
 
+    public String getDownloadLink() {
+        return downloadLink;
+    }
+
     @Override
     public String toString() {
         return "FileInfoResponse{" +
@@ -56,6 +62,7 @@ public class FileInfoResponse {
                 ", fileSize=" + fileSize +
                 ", uploadDate=" + uploadDate +
                 ", updateDate=" + updateDate +
+                ", downloadLink='" + downloadLink + '\'' +
                 '}';
     }
 }

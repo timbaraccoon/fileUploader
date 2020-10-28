@@ -2,7 +2,8 @@ package com.testapp.fileManager.service;
 
 import com.testapp.fileManager.dao.FileStorageRepository;
 import com.testapp.fileManager.dao.OnlyFileNames;
-import com.testapp.fileManager.entity.FileModel;
+import com.testapp.fileManager.entity.FileStorageModel;
+import com.testapp.fileManager.rest.requests.FilterRequestParams;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class FileManagerServiceImpl implements FileManagerService {
@@ -27,12 +30,12 @@ public class FileManagerServiceImpl implements FileManagerService {
 
     @Override
     public FileInfoResponse saveFile(MultipartFile inputFile) {
-        FileModel model;
+        FileStorageModel model;
 
         try {
             // fileData = inputFile.getInputStream().readAllBytes();
 
-            model = new FileModel();
+            model = new FileStorageModel();
 
             model.setFileName(FilenameUtils.getName(inputFile.getOriginalFilename()));
             model.setFileSize(inputFile.getSize());
@@ -56,7 +59,7 @@ public class FileManagerServiceImpl implements FileManagerService {
 
     @Override
     public FileInfoResponse updateFile(int fileId, MultipartFile inputFile) {
-        FileModel model = getFileModelById(fileId);
+        FileStorageModel model = getFileModelById(fileId);
 
         try {
             model.setFileData(inputFile.getBytes());
@@ -72,22 +75,51 @@ public class FileManagerServiceImpl implements FileManagerService {
     }
 
     @Override
-    public FileModel getFileById(int fileId) {
-        FileModel model = getFileModelById(fileId);
+    public FileStorageModel getFileById(int fileId) {
+        FileStorageModel model = getFileModelById(fileId);
         return model;
     }
 
     @Override
-    public List<FileInfoResponse> getFileList() {
+    public List<FileInfoResponse> getFileList(FilterRequestParams filterParams) {
 
-        List<FileModel> storageModels = fileStorageRepository.findAll();
         List<FileInfoResponse> responseList = new ArrayList<>();
+        List<FileStorageModel> storageModels = fileStorageRepository.findAll();
 
-        for (FileModel model : storageModels) {
+        for (FileStorageModel model : storageModels) {
             responseList.add(createNewFileInfoResponse(model));
         }
 
-        return responseList;
+        if (filterParams == null) {
+            return responseList;
+        } else {
+            Stream<FileInfoResponse> stream = responseList.stream();
+
+            if (filterParams.getNamePart() != null) {
+                stream = stream.filter(s -> s.getFileName().toLowerCase()
+                                .contains(filterParams.getNamePart()));
+            }
+
+            if (filterParams.getDataFrom() != null) {
+                stream = stream.filter(s -> s.getUpdateDate().isAfter(filterParams.getDataFrom()));
+            }
+
+            if (filterParams.getDataTo() != null) {
+                stream = stream.filter(s -> s.getUpdateDate().isBefore(filterParams.getDataTo()));
+            }
+            if (filterParams.getFileTypes() != null) {
+                stream = stream.filter(s -> {
+                    for (String fileType : filterParams.getFileTypes()) {
+                        if (fileType.contains(s.getFileType())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }); // ugly but hope it will work
+            }
+
+            return stream.collect(Collectors.toList());
+        }
     }
 
     @Override
@@ -97,7 +129,7 @@ public class FileManagerServiceImpl implements FileManagerService {
 
 
 
-    private FileInfoResponse createNewFileInfoResponse(FileModel model) {
+    private FileInfoResponse createNewFileInfoResponse(FileStorageModel model) {
         return new FileInfoResponse(
                 model.getFileId(),
                 model.getFileName(),
@@ -108,9 +140,9 @@ public class FileManagerServiceImpl implements FileManagerService {
         );
     }
 
-    private FileModel getFileModelById(int id) {
-        Optional<FileModel> result = fileStorageRepository.findById(id);
-        FileModel fileModel;
+    private FileStorageModel getFileModelById(int id) {
+        Optional<FileStorageModel> result = fileStorageRepository.findById(id);
+        FileStorageModel fileModel;
 
         if (result.isPresent()) {
             fileModel = result.get();

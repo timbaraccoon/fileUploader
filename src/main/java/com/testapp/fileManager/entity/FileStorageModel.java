@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table
-public class FileModel {
+public class FileStorageModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class FileModel {
     @Column(name = "file_data", length = 16000000, nullable = false)
     byte[] fileData;
 
-    public FileModel() {
+    public FileStorageModel() {
     }
 
     public int getFileId() {

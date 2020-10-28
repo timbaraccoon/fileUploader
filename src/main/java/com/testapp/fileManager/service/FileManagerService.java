@@ -1,7 +1,8 @@
 package com.testapp.fileManager.service;
 
 import com.testapp.fileManager.dao.OnlyFileNames;
-import com.testapp.fileManager.entity.FileModel;
+import com.testapp.fileManager.entity.FileStorageModel;
+import com.testapp.fileManager.rest.requests.FilterRequestParams;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,12 +14,12 @@ public interface FileManagerService {
 
     FileInfoResponse updateFile(int fileId, MultipartFile file);
 
-    FileModel getFileById(int id);
+    FileStorageModel getFileById(int id);
 
     void deleteFile(int fileId);
 
     List<OnlyFileNames> getFileNamesList();
 
-    List<FileInfoResponse> getFileList();
+    List<FileInfoResponse> getFileList(FilterRequestParams filterParams);
 
 }

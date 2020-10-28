@@ -1,7 +1,8 @@
 package com.testapp.fileManager.rest;
 
 import com.testapp.fileManager.dao.OnlyFileNames;
-import com.testapp.fileManager.entity.FileModel;
+import com.testapp.fileManager.entity.FileStorageModel;
+import com.testapp.fileManager.rest.requests.FilterRequestParams;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import com.testapp.fileManager.service.FileManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class FileManagerRestController {
     @GetMapping("/files/{fileId}")
     public ResponseEntity<Resource> getFileById(@PathVariable int fileId) {
         // Load file from database
-        FileModel model = fileManagerService.getFileById(fileId);
+        FileStorageModel model = fileManagerService.getFileById(fileId);
 
         if (model == null) {
             throw new RuntimeException("File id is not found: " + fileId);
@@ -56,8 +57,8 @@ public class FileManagerRestController {
 
 
     @GetMapping("/files/list")
-    public List<FileInfoResponse> getFileList() {
-        return fileManagerService.getFileList();
+    public List<FileInfoResponse> getFileList(@RequestBody FilterRequestParams filterParams) {
+        return fileManagerService.getFileList(filterParams);
     }
 
 
@@ -76,7 +77,7 @@ public class FileManagerRestController {
 
     @DeleteMapping("/files/{fileId}")
     public String deleteCustomer(@PathVariable int fileId) {
-        FileModel model = fileManagerService.getFileById(fileId);
+        FileStorageModel model = fileManagerService.getFileById(fileId);
 
         if (model == null) {
             throw new RuntimeException("File id is not found: " + fileId);

@@ -115,7 +115,7 @@ public class FileManagerServiceImpl implements FileManagerService {
                         }
                     }
                     return false;
-                }); // ugly but hope it will work
+                }); // ugly but work
             }
 
             return stream.collect(Collectors.toList());

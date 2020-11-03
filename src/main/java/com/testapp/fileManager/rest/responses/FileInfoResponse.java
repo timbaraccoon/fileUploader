@@ -21,7 +21,7 @@ public class FileInfoResponse {
         this.fileSize = fileSize;
         this.uploadDate = uploadDate;
         this.updateDate = updateDate;
-        this.downloadLink = "http://localhost:8080/api/files/" + fileId; // link for creation get request for download
+        this.downloadLink = "http://localhost:8080/api/files/" + fileId; // get request link for download
 
     }
 

@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class FileManagerServiceImpl implements FileManagerService {
@@ -35,28 +40,33 @@ public class FileManagerServiceImpl implements FileManagerService {
         FileStorageModel model;
 
         try {
-            // fileData = inputFile.getInputStream().readAllBytes();
-
             model = new FileStorageModel();
-
-            model.setFileName(FilenameUtils.getName(inputFile.getOriginalFilename()));
-            model.setFileSize(inputFile.getSize());
-            model.setFileType(FilenameUtils.getExtension(inputFile.getOriginalFilename()));
-            model.setFileData(inputFile.getBytes());
-
-            LocalDateTime currTime = LocalDateTime.now();
-
-            model.setUploadDate(currTime);
-            model.setUpdateDate(currTime);
-
+            initializeModelFields(inputFile, model);
             fileStorageRepository.save(model);
 
         } catch (IOException e) {
             e.printStackTrace();
             throw new FileStorageException("Can't store this file, something goes wrong", e);
         }
-        // return "File: " + inputFile.getName() + " successfully saved. Go celebrate Man!";
         return createNewFileInfoResponse(model);
+    }
+
+    private void initializeModelFields(MultipartFile inputFile, FileStorageModel model) throws IOException {
+        String fileName = inputFile.getOriginalFilename();
+        String fileExtension = FilenameUtils.getExtension(fileName);
+        LocalDateTime currTime = LocalDateTime.now();
+
+        model.setFileName(fileName);
+        model.setFileSize(inputFile.getSize());
+        model.setFileType(fileExtension);
+        model.setFileData(inputFile.getBytes());
+        model.setUploadDate(currTime);
+        model.setUpdateDate(currTime);
+    }
+
+    @Override
+    public FileStorageModel getFileById(int fileId) {
+        return getFileModelById(fileId);
     }
 
     @Override
@@ -76,10 +86,15 @@ public class FileManagerServiceImpl implements FileManagerService {
         return createNewFileInfoResponse(model);
     }
 
-    @Override
-    public FileStorageModel getFileById(int fileId) {
-        FileStorageModel model = getFileModelById(fileId);
-        return model;
+    private FileInfoResponse createNewFileInfoResponse(FileStorageModel model) {
+        return new FileInfoResponse(
+                model.getFileId(),
+                model.getFileName(),
+                model.getFileType(),
+                model.getFileSize(),
+                model.getUploadDate(),
+                model.getUpdateDate()
+        );
     }
 
     @Override
@@ -101,11 +116,9 @@ public class FileManagerServiceImpl implements FileManagerService {
                 stream = stream.filter(s -> s.getFileName().toLowerCase()
                                 .contains(filterParams.getNamePart()));
             }
-
             if (filterParams.getDataFrom() != null) {
                 stream = stream.filter(s -> s.getUpdateDate().isAfter(filterParams.getDataFrom()));
             }
-
             if (filterParams.getDataTo() != null) {
                 stream = stream.filter(s -> s.getUpdateDate().isBefore(filterParams.getDataTo()));
             }
@@ -125,21 +138,34 @@ public class FileManagerServiceImpl implements FileManagerService {
     }
 
     @Override
-    public List<OnlyFileNames> getFileNamesList() {
-        return fileStorageRepository.findNamesByFileNameNotNull();
+    public ZipOutputStream getArchive(List<Integer> fileIds, HttpServletResponse response) throws IOException {
+        ZipOutputStream resultZip = new ZipOutputStream(response.getOutputStream());
+
+        try (resultZip) {
+
+            for (Integer fileId : fileIds) {
+                FileStorageModel fileModel = getFileById(fileId);
+
+                ZipEntry zipEntry = new ZipEntry(fileModel.getFileName());
+
+                zipEntry.setSize(fileModel.getFileSize());
+                resultZip.putNextEntry(zipEntry);
+
+                resultZip.write(fileModel.getFileData());
+                resultZip.closeEntry();
+            }
+            resultZip.finish();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultZip;
     }
 
-
-
-    private FileInfoResponse createNewFileInfoResponse(FileStorageModel model) {
-        return new FileInfoResponse(
-                model.getFileId(),
-                model.getFileName(),
-                model.getFileType(),
-                model.getFileSize(),
-                model.getUploadDate(),
-                model.getUpdateDate()
-        );
+    @Override
+    public List<OnlyFileNames> getFileNamesList() {
+        return fileStorageRepository.findNamesByFileNameNotNull();
     }
 
     private FileStorageModel getFileModelById(int id) {
@@ -152,14 +178,11 @@ public class FileManagerServiceImpl implements FileManagerService {
             throw new CustomFileNotFoundException("Can't find File with id: " + id);
         }
         return fileModel;
-
     }
 
     @Override
     public void deleteFile(int fileId) {
         fileStorageRepository.deleteById(fileId);
-        // return "File with id: " + fileId + " - successfully deleted.";
     }
-
 
 }

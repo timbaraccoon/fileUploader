@@ -6,7 +6,10 @@ import com.testapp.fileManager.rest.requests.FilterRequestParams;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipOutputStream;
 
 public interface FileManagerService {
 
@@ -20,8 +23,7 @@ public interface FileManagerService {
 
     List<OnlyFileNames> getFileNamesList();
 
-//    List<FileInfoResponse> getFileList();
-
     List<FileInfoResponse> getFileList(FilterRequestParams filterParams);
 
+    ZipOutputStream getArchive(List<Integer> fileIds, HttpServletResponse response) throws IOException;
 }

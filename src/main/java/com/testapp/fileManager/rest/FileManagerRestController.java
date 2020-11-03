@@ -2,6 +2,7 @@ package com.testapp.fileManager.rest;
 
 import com.testapp.fileManager.dao.OnlyFileNames;
 import com.testapp.fileManager.entity.FileStorageModel;
+import com.testapp.fileManager.rest.customexceptions.CustomFileNotFoundException;
 import com.testapp.fileManager.rest.requests.FilterRequestParams;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import com.testapp.fileManager.service.FileManagerService;
@@ -42,8 +43,7 @@ public class FileManagerRestController {
         FileStorageModel model = fileManagerService.getFileById(fileId);
 
         if (model == null) {
-            throw new RuntimeException("File id is not found: " + fileId);
-            // поменять на   CustomNotFoundException(""File id is not found: " + fileId)
+            throw new CustomFileNotFoundException("File id is not found: " + fileId);
         }
 
         FileNameMap fileNameMap = URLConnection.getFileNameMap();
@@ -54,7 +54,6 @@ public class FileManagerRestController {
                 .contentType(MediaType.asMediaType(MimeType.valueOf(mimeType)))
                 .body(new ByteArrayResource(model.getFileData()));
     }
-
 
     @GetMapping("/files/list")
     public List<FileInfoResponse> getFileList(@RequestBody FilterRequestParams filterParams) {
@@ -80,15 +79,11 @@ public class FileManagerRestController {
         FileStorageModel model = fileManagerService.getFileById(fileId);
 
         if (model == null) {
-            throw new RuntimeException("File id is not found: " + fileId);
-            // поменять на   CustomNotFoundException(""File id is not found: " + fileId)
+            throw new CustomFileNotFoundException("File id is not found: " + fileId);
         }
         fileManagerService.deleteFile(fileId);
 
         return "File with id: " + fileId + " - successful deleted.";
     }
-
-
-
 
 }

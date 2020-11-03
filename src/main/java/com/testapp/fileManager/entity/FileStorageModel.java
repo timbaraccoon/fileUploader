@@ -31,9 +31,6 @@ public class FileStorageModel {
     @Column(name = "file_data", length = 16000000, nullable = false)
     byte[] fileData;
 
-    public FileStorageModel() {
-    }
-
     public int getFileId() {
         return fileId;
     }

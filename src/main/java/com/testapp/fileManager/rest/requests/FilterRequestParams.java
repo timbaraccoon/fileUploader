@@ -1,7 +1,6 @@
 package com.testapp.fileManager.rest.requests;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashSet;
 
 public class FilterRequestParams {

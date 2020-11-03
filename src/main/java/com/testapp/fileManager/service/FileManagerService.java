@@ -20,6 +20,8 @@ public interface FileManagerService {
 
     List<OnlyFileNames> getFileNamesList();
 
+//    List<FileInfoResponse> getFileList();
+
     List<FileInfoResponse> getFileList(FilterRequestParams filterParams);
 
 }

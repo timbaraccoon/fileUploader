@@ -3,6 +3,8 @@ package com.testapp.fileManager.service;
 import com.testapp.fileManager.dao.FileStorageRepository;
 import com.testapp.fileManager.dao.OnlyFileNames;
 import com.testapp.fileManager.entity.FileStorageModel;
+import com.testapp.fileManager.rest.customexceptions.CustomFileNotFoundException;
+import com.testapp.fileManager.rest.customexceptions.FileStorageException;
 import com.testapp.fileManager.rest.requests.FilterRequestParams;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.apache.commons.io.FilenameUtils;
@@ -51,7 +53,7 @@ public class FileManagerServiceImpl implements FileManagerService {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("Can't store this file, something goes wrong", e);
+            throw new FileStorageException("Can't store this file, something goes wrong", e);
         }
         // return "File: " + inputFile.getName() + " successfully saved. Go celebrate Man!";
         return createNewFileInfoResponse(model);
@@ -147,7 +149,7 @@ public class FileManagerServiceImpl implements FileManagerService {
         if (result.isPresent()) {
             fileModel = result.get();
         } else {
-            throw new RuntimeException("Can't find File with id: " + id);
+            throw new CustomFileNotFoundException("Can't find File with id: " + id);
         }
         return fileModel;
 

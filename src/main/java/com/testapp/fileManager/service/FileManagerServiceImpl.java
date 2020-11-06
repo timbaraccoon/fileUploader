@@ -5,6 +5,7 @@ import com.testapp.fileManager.dao.OnlyFileNames;
 import com.testapp.fileManager.entity.FileStorageModel;
 import com.testapp.fileManager.rest.customexceptions.CustomFileNotFoundException;
 import com.testapp.fileManager.rest.customexceptions.FileStorageException;
+import com.testapp.fileManager.rest.customexceptions.UnsupportedFileFormatException;
 import com.testapp.fileManager.rest.requests.FilterRequestParams;
 import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import org.apache.commons.io.FilenameUtils;
@@ -12,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,10 +29,12 @@ import java.util.zip.ZipOutputStream;
 public class FileManagerServiceImpl implements FileManagerService {
 
     private final FileStorageRepository fileStorageRepository;
+    private final SupportedFileExtensionsSet extensionsSet;
 
     @Autowired
-    public FileManagerServiceImpl(FileStorageRepository fileStorageRepository) {
+    public FileManagerServiceImpl(FileStorageRepository fileStorageRepository, SupportedFileExtensionsSet extensionsKeeper) {
         this.fileStorageRepository = fileStorageRepository;
+        this.extensionsSet = extensionsKeeper;
     }
 
     @Override
@@ -53,7 +55,12 @@ public class FileManagerServiceImpl implements FileManagerService {
 
     private void initializeModelFields(MultipartFile inputFile, FileStorageModel model) throws IOException {
         String fileName = inputFile.getOriginalFilename();
-        String fileExtension = FilenameUtils.getExtension(fileName);
+        String fileExtension = FilenameUtils.getExtension(fileName).toLowerCase();
+
+        if (!(extensionsSet.getExtensions().contains(fileExtension))) {
+            throw new UnsupportedFileFormatException("Unsupported type of File");
+        }
+
         LocalDateTime currTime = LocalDateTime.now();
 
         model.setFileName(fileName);
@@ -142,15 +149,13 @@ public class FileManagerServiceImpl implements FileManagerService {
         ZipOutputStream resultZip = new ZipOutputStream(response.getOutputStream());
 
         try (resultZip) {
-
             for (Integer fileId : fileIds) {
                 FileStorageModel fileModel = getFileById(fileId);
 
                 ZipEntry zipEntry = new ZipEntry(fileModel.getFileName());
-
                 zipEntry.setSize(fileModel.getFileSize());
-                resultZip.putNextEntry(zipEntry);
 
+                resultZip.putNextEntry(zipEntry);
                 resultZip.write(fileModel.getFileData());
                 resultZip.closeEntry();
             }

@@ -3,6 +3,7 @@ package com.testapp.fileManager.rest;
 import com.testapp.fileManager.rest.customexceptions.CustomFileNotFoundException;
 import com.testapp.fileManager.rest.customexceptions.FileStorageException;
 import com.testapp.fileManager.rest.customexceptions.FileUploaderErrorResponse;
+import com.testapp.fileManager.rest.customexceptions.UnsupportedFileFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,6 +41,16 @@ public class RestExceptionHandler {
                 System.currentTimeMillis());
 
         return new ResponseEntity<FileUploaderErrorResponse>(errResponse, HttpStatus.EXPECTATION_FAILED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<FileUploaderErrorResponse> handleException(UnsupportedFileFormatException exc) {
+        FileUploaderErrorResponse errResponse = new FileUploaderErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                exc.getMessage(),
+                System.currentTimeMillis());
+
+        return new ResponseEntity<FileUploaderErrorResponse>(errResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler

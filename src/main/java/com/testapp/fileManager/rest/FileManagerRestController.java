@@ -84,8 +84,10 @@ public class FileManagerRestController {
     @ApiOperation(value = "Download Archive of Files",
             notes = "Take List of file ID, return archive of selected files")
     @GetMapping("/files/archive")
+
     public void getArchive(@RequestBody List<Integer> fileIds, HttpServletResponse response) {
         try {
+            // TODO try cut it & test
             ZipOutputStream zipOut = fileManagerService.getArchive(fileIds, response);
         } catch (IOException e) {
             e.printStackTrace();

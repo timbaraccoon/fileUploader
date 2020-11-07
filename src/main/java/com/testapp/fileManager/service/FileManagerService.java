@@ -17,13 +17,15 @@ public interface FileManagerService {
 
     FileInfoResponse updateFile(int fileId, MultipartFile file);
 
-    FileStorageModel getFileById(int id);
+    FileStorageModel getFileStorageById(int id);
 
     void deleteFile(int fileId);
 
     List<OnlyFileNames> getFileNamesList();
 
-    List<FileInfoResponse> getFileList(FilterRequestParams filterParams);
+    FileInfoResponse getFileInfoById(int id);
+
+    List<FileInfoResponse> getFileInfoList(FilterRequestParams filterParams);
 
     ZipOutputStream getArchive(List<Integer> fileIds, HttpServletResponse response) throws IOException;
 }

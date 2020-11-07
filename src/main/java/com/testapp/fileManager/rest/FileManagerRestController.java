@@ -8,8 +8,6 @@ import com.testapp.fileManager.rest.responses.FileInfoResponse;
 import com.testapp.fileManager.service.FileManagerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -25,7 +23,6 @@ import java.io.IOException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.zip.ZipOutputStream;
 
 @Api(tags = {"In memory File Downloader"})
 //@SwaggerDefinition(tags = {
@@ -55,9 +52,9 @@ public class FileManagerRestController {
     @ApiOperation(value = "Download file",
             notes = "Download file from database with file id")
     @GetMapping("/files/{fileId}")
-    public ResponseEntity<Resource> getFileById(@PathVariable int fileId) {
+    public ResponseEntity<Resource> downloadFileById(@PathVariable int fileId) {
         // Load file from database
-        FileStorageModel model = fileManagerService.getFileById(fileId);
+        FileStorageModel model = fileManagerService.getFileStorageById(fileId);
 
         if (model == null) {
             throw new CustomFileNotFoundException("File id is not found: " + fileId);
@@ -72,13 +69,23 @@ public class FileManagerRestController {
                 .body(new ByteArrayResource(model.getFileData()));
     }
 
+    @GetMapping("/files/info/{fileId}")
+    public FileInfoResponse getFileInfoById(@PathVariable int fileId) {
+        FileInfoResponse response = fileManagerService.getFileInfoById(fileId);
+
+        if (response == null) {
+            throw new CustomFileNotFoundException("File id is not found: " + fileId);
+        }
+        return response;
+    }
+
     @ApiOperation(value = "Get List of Files",
             notes = "Return list of files info with download links, also filter result list by " +
                     "different parameters, or without filters return all",
             response = FileInfoResponse.class)
     @GetMapping("/files/list")
     public List<FileInfoResponse> getFileList(@RequestBody FilterRequestParams filterParams) {
-        return fileManagerService.getFileList(filterParams);
+        return fileManagerService.getFileInfoList(filterParams);
     }
 
     @ApiOperation(value = "Download Archive of Files",
@@ -87,12 +94,10 @@ public class FileManagerRestController {
 
     public void getArchive(@RequestBody List<Integer> fileIds, HttpServletResponse response) {
         try {
-            // TODO try cut it & test
-            ZipOutputStream zipOut = fileManagerService.getArchive(fileIds, response);
+            fileManagerService.getArchive(fileIds, response);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         response.setStatus(HttpServletResponse.SC_OK);
         response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"archive\"");
     }
@@ -115,8 +120,8 @@ public class FileManagerRestController {
 
     @ApiOperation(value = "Delete file by ID")
     @DeleteMapping("/files/{fileId}")
-    public String deleteCustomer(@PathVariable int fileId) {
-        FileStorageModel model = fileManagerService.getFileById(fileId);
+    public String deleteFile(@PathVariable int fileId) {
+        FileStorageModel model = fileManagerService.getFileStorageById(fileId);
 
         if (model == null) {
             throw new CustomFileNotFoundException("File id is not found: " + fileId);

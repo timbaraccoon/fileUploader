@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -72,13 +71,21 @@ public class FileManagerServiceImpl implements FileManagerService {
     }
 
     @Override
-    public FileStorageModel getFileById(int fileId) {
+    public FileStorageModel getFileStorageById(int fileId) {
         return getFileModelById(fileId);
     }
 
     @Override
     public FileInfoResponse updateFile(int fileId, MultipartFile inputFile) {
+        String inputFileName = inputFile.getOriginalFilename();
+        String inputFileExtension = FilenameUtils.getExtension(inputFileName).toLowerCase();
         FileStorageModel model = getFileModelById(fileId);
+
+        if ( !(inputFileName.equals(model.getFileName()))
+            || !(inputFileExtension.equals(model.getFileType())) ) {
+
+            throw new FileStorageException("Can't update, it's another File");
+        }
 
         try {
             model.setFileData(inputFile.getBytes());
@@ -104,8 +111,14 @@ public class FileManagerServiceImpl implements FileManagerService {
         );
     }
 
+    public FileInfoResponse getFileInfoById(int id) {
+        FileStorageModel model = getFileModelById(id);
+
+        return createNewFileInfoResponse(model);
+    }
+
     @Override
-    public List<FileInfoResponse> getFileList(FilterRequestParams filterParams) {
+    public List<FileInfoResponse> getFileInfoList(FilterRequestParams filterParams) {
 
         List<FileInfoResponse> responseList = new ArrayList<>();
         List<FileStorageModel> storageModels = fileStorageRepository.findAll();
@@ -150,7 +163,7 @@ public class FileManagerServiceImpl implements FileManagerService {
 
         try (resultZip) {
             for (Integer fileId : fileIds) {
-                FileStorageModel fileModel = getFileById(fileId);
+                FileStorageModel fileModel = getFileStorageById(fileId);
 
                 ZipEntry zipEntry = new ZipEntry(fileModel.getFileName());
                 zipEntry.setSize(fileModel.getFileSize());

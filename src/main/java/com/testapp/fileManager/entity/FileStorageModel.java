@@ -3,6 +3,7 @@ package com.testapp.fileManager.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Entity
 @Table
@@ -30,6 +31,19 @@ public class FileStorageModel {
 
     @Column(name = "file_data", length = 16000000, nullable = false)
     byte[] fileData;
+
+    public FileStorageModel() {
+    }
+
+    public FileStorageModel(int fileId, String fileName, String fileType, long fileSize, LocalDateTime uploadDate, LocalDateTime updateDate, byte[] fileData) {
+        this.fileId = fileId;
+        this.fileName = fileName;
+        this.fileType = fileType;
+        this.fileSize = fileSize;
+        this.uploadDate = uploadDate;
+        this.updateDate = updateDate;
+        this.fileData = fileData;
+    }
 
     public int getFileId() {
         return fileId;
@@ -97,5 +111,33 @@ public class FileStorageModel {
                 ", fileType='" + fileType + '\'' +
                 ", fileSize=" + fileSize +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FileStorageModel that = (FileStorageModel) o;
+
+        if (fileId != that.fileId) return false;
+        if (fileSize != that.fileSize) return false;
+        if (fileName != null ? !fileName.equals(that.fileName) : that.fileName != null) return false;
+        if (fileType != null ? !fileType.equals(that.fileType) : that.fileType != null) return false;
+        if (uploadDate != null ? !uploadDate.equals(that.uploadDate) : that.uploadDate != null) return false;
+        if (updateDate != null ? !updateDate.equals(that.updateDate) : that.updateDate != null) return false;
+        return Arrays.equals(fileData, that.fileData);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fileId;
+        result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
+        result = 31 * result + (fileType != null ? fileType.hashCode() : 0);
+        result = 31 * result + (int) (fileSize ^ (fileSize >>> 32));
+        result = 31 * result + (uploadDate != null ? uploadDate.hashCode() : 0);
+        result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(fileData);
+        return result;
     }
 }

@@ -49,11 +49,10 @@ public class FileManagerRestController {
         return fileManagerService.saveFile(file);
     }
 
-    @ApiOperation(value = "Download file",
-            notes = "Download file from database with file id")
+    @ApiOperation(value = "Download file", notes = "Download file from database with file id")
     @GetMapping("/files/{fileId}")
     public ResponseEntity<Resource> downloadFileById(@PathVariable int fileId) {
-        // Load file from database
+
         FileStorageModel model = fileManagerService.getFileStorageById(fileId);
 
         if (model == null) {
@@ -69,6 +68,7 @@ public class FileManagerRestController {
                 .body(new ByteArrayResource(model.getFileData()));
     }
 
+
     @GetMapping("/files/info/{fileId}")
     public FileInfoResponse getFileInfoById(@PathVariable int fileId) {
         FileInfoResponse response = fileManagerService.getFileInfoById(fileId);
@@ -80,18 +80,17 @@ public class FileManagerRestController {
     }
 
     @ApiOperation(value = "Get List of Files",
-            notes = "Return list of files info with download links, also filter result list by " +
-                    "different parameters, or without filters return all",
+            notes = "Return list of files info with download links, also filter result list by different parameters, or without filters return all",
             response = FileInfoResponse.class)
     @GetMapping("/files/list")
     public List<FileInfoResponse> getFileList(@RequestBody FilterRequestParams filterParams) {
         return fileManagerService.getFileInfoList(filterParams);
     }
 
+
     @ApiOperation(value = "Download Archive of Files",
             notes = "Take List of file ID, return archive of selected files")
     @GetMapping("/files/archive")
-
     public void getArchive(@RequestBody List<Integer> fileIds, HttpServletResponse response) {
         try {
             fileManagerService.getArchive(fileIds, response);
@@ -111,7 +110,7 @@ public class FileManagerRestController {
     @ApiOperation(value = "Update File",
             notes = "Update selected by ID file, return updated file info model",
             response = FileInfoResponse.class)
-    @PutMapping("/files/{fileId}")
+    @PostMapping("/files/{fileId}")
     public FileInfoResponse updateFile(@PathVariable int fileId,
                                        @RequestBody MultipartFile file) {
 
@@ -120,7 +119,7 @@ public class FileManagerRestController {
 
     @ApiOperation(value = "Delete file by ID")
     @DeleteMapping("/files/{fileId}")
-    public String deleteFile(@PathVariable int fileId) {
+    public String deleteFileById(@PathVariable int fileId) {
         FileStorageModel model = fileManagerService.getFileStorageById(fileId);
 
         if (model == null) {

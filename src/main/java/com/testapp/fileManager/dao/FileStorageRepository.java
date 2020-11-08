@@ -7,11 +7,7 @@ import java.util.List;
 
 public interface FileStorageRepository extends JpaRepository<FileStorageModel, Integer> {
 
-//    @Query("SELECT FILE_NAME FROM FILE_MODEL")
-//    List<String> findAllFileNames();
-
     List<OnlyFileNames> findNamesByFileNameNotNull();
 
-//    List<String> findFileNames();
 
 }

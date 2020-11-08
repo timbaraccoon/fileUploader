@@ -25,10 +25,6 @@ import java.net.URLConnection;
 import java.util.List;
 
 @Api(tags = {"In memory File Downloader"})
-//@SwaggerDefinition(tags = {
-//        @Tag(name = "In memory File Downloader", description = "API for download storage and upload different types of " +
-//                "files in memory, also return list of filenames and downloads group of files in archive")
-//})
 @RestController
 @RequestMapping("/api")
 public class FileManagerRestController {
@@ -80,7 +76,8 @@ public class FileManagerRestController {
     }
 
     @ApiOperation(value = "Get List of Files",
-            notes = "Return list of files info with download links, also filter result list by different parameters, or without filters return all",
+            notes = "Return list of files info with download links, also filter result " +
+                    "list by different parameters, or without filters return all",
             response = FileInfoResponse.class)
     @GetMapping("/files/list")
     public List<FileInfoResponse> getFileList(@RequestBody FilterRequestParams filterParams) {
